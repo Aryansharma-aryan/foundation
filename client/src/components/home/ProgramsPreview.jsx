@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import codingImage from "../../assets/program-codding.jpg";
-import educationImage from "../../assets/program-education.jpg";
-import foodImage from "../../assets/program-food.jpg";
+import educationImage from "../../assets/students.jpeg";
+import foodImage from "../../assets/meals.jpeg";
 import healthcareImage from "../../assets/program-healthcare.jpg";
 
 const programs = [

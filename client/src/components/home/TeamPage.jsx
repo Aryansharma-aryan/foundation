@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
-import cofounderImg from "../../assets/ravi-arora.jpeg";
+import cofounderImg from "../../assets/ravi.jfif";
 import workerImg from "../../assets/aryan-sharma.jpeg";
 
 const teamMembers = [
   {
     name: "Ravi Arora",
-    role: "Co-Founder",
+    role: "Founder",
     phone: "+91 9215200212",
     email: "info@davisgirdharfoundation.com",
     image: cofounderImg,
-    bio: "Guiding the foundation with a focus on sincere service, community trust, and practical support for children and families.",
+    bio: "Leading the foundation with a steady focus on sincere service, community trust, and practical support for children and families.",
   },
   {
     name: "Aryan Sharma",
@@ -37,28 +37,28 @@ const TeamPage = ({ standalone = false }) => {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-7">
+        <div className="mt-12 grid gap-7 xl:grid-cols-2">
           {teamMembers.map((member) => (
             <article
               key={member.name}
-              className="group overflow-hidden rounded-[2rem] border border-[var(--color-line)] bg-white shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-1 md:grid md:grid-cols-[220px_1fr]"
+              className="group overflow-hidden rounded-[2rem] border border-[var(--color-line)] bg-white shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(40,24,10,0.14)] md:grid md:grid-cols-[240px_1fr]"
             >
-              <div className="relative h-[240px] overflow-hidden md:h-full">
+              <div className="relative h-[280px] overflow-hidden bg-[linear-gradient(180deg,rgba(225,106,31,0.08),rgba(245,187,74,0.22))] md:h-full">
                 <img
                   src={member.image}
                   alt={member.name}
                   className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.04]"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_45%,rgba(28,24,33,0.55)_100%)]" />
-                <div className="absolute left-6 top-6 rounded-full bg-white/88 px-4 py-2 text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
-                  {member.role}
-                </div>
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,transparent_0%,rgba(28,24,33,0.18)_100%)]" />
               </div>
 
-              <div className="p-7 sm:p-8">
+              <div className="flex flex-col justify-center p-7 sm:p-8">
                 <h3 className="text-3xl font-bold tracking-tight text-[var(--color-text)]">
                   {member.name}
                 </h3>
+                <p className="mt-3 inline-flex w-fit items-center rounded-full bg-[var(--color-bg)] px-4 py-2 text-sm font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">
+                  {member.role}
+                </p>
 
                 <p className="mt-4 text-base leading-7 text-[var(--color-muted)]">
                   {member.bio}

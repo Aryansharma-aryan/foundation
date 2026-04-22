@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const contactCards = [
   { label: "Phone", value: "+91 92152-00212", href: "tel:+919215200212" },
   { label: "Email", value: "info@davisgirdharfoundation.com", href: "mailto:info@davisgirdharfoundation.com" },
-  { label: "Location", value: "Umri, Kurukshetra, Haryana", href: "https://www.google.com/maps/search/Umri+Kurukshetra+Haryana" },
+  { label: "Location", value: "C/o Sh. Sham Das, Umri, Mathana, Umri Thanesar, Kurukshetra, Haryana, 136131", href: "https://www.google.com/maps/search/C%2Fo+Sh.+Sham+Das%2C+Umri%2C+Mathana%2C+Umri+Thanesar%2C+Kurukshetra%2C+Haryana+136131" },
 ];
 
 const Contact = () => {

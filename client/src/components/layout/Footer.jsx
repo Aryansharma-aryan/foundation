@@ -61,8 +61,8 @@ const Footer = () => {
           </div>
         ))}
       </div>
-      <div className="border-t border-[var(--color-line)] py-4 text-center text-xs uppercase tracking-[0.22em] text-[var(--color-muted)]">
-        Davis Girdhar Foundation | Umri, Kurukshetra, Haryana
+      <div className="border-t border-[var(--color-line)] px-4 py-4 text-center text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">
+        Davis Girdhar Foundation | C/o Sh. Sham Das, Umri, Mathana, Umri Thanesar, Kurukshetra, Haryana, 136131
       </div>
     </footer>
   );
