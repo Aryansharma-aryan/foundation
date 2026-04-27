@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
-import educationImage from "../../assets/program-education.jpg";
+import educationImage from "../../assets/students.jpeg";
 import codingImage from "../../assets/program-codding.jpg";
-import foodImage from "../../assets/program-food.jpg";
+import foodImage from "../../assets/meals.jpeg";
 import healthcareImage from "../../assets/program-healthcare.jpg";
 
 const programDetails = {
