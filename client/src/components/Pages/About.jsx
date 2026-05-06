@@ -1,17 +1,17 @@
-import { Link } from "react-router-dom";
+ï»¿import { Link } from "react-router-dom";
 
 const values = [
   {
-    title: "Clarity",
-    text: "Programs are presented in a way that families, volunteers, and donors can understand quickly.",
+    title: "Nutrition",
+    text: "Helping children and families with practical food support when immediate needs are hardest.",
   },
   {
-    title: "Care",
-    text: "Support is organised around real needs such as learning, meals, health, and guidance.",
+    title: "Education",
+    text: "Supporting children with learning opportunities, guidance, and confidence for the future.",
   },
   {
-    title: "Consistency",
-    text: "Long-term trust grows when outreach is regular, visible, and responsibly managed.",
+    title: "Health",
+    text: "Encouraging healthier communities through awareness, care, and outreach initiatives.",
   },
 ];
 
@@ -26,10 +26,16 @@ const About = () => {
     <div className="pb-12">
       <section className="shell section-space pt-10 sm:pt-14">
         <div className="rounded-[2rem] bg-slate-950 px-6 py-14 text-white sm:px-10 lg:px-14">
-          <p className="section-kicker text-emerald-300">About</p>
-          <h1 className="mt-4 max-w-4xl text-4xl font-bold leading-tight sm:text-5xl">A cleaner, more professional presentation of the foundation’s mission.</h1>
+          <p className="section-kicker text-emerald-300">About Us</p>
+          <h1 className="mt-4 max-w-4xl text-4xl font-bold leading-tight sm:text-5xl">Transforming a personal loss into a meaningful mission for society.</h1>
           <p className="mt-5 max-w-3xl text-base leading-7 text-slate-300">
-            Davis Girdhar Foundation focuses on education, digital exposure, food support, and community care in rural Haryana. This page now keeps the message more direct, more readable, and easier to trust.
+            Davis Girdhar Foundation is a non-profit organization established in loving memory of Davis Girdhar, who sadly passed away in an unfortunate school accident.
+          </p>
+          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
+            This foundation is an effort to transform a personal loss into a meaningful mission for society.
+          </p>
+          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
+            We are dedicated to supporting underprivileged children and families through nutrition, education, and health initiatives.
           </p>
           <div className="mt-6 flex flex-wrap gap-4">
             <Link to="/stories" className="btn-secondary border-white/20 bg-white/10 text-white hover:border-white hover:text-white">Read Stories</Link>
@@ -41,9 +47,9 @@ const About = () => {
       <section className="shell grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <div className="card rounded-[2rem] p-6 sm:p-8">
           <p className="section-kicker">Mission</p>
-          <h2 className="section-title">Support children and families with practical help that leads to longer-term opportunity.</h2>
+          <h2 className="section-title">Support children and families with care, dignity, and practical help.</h2>
           <p className="section-copy">
-            The foundation combines education, technology exposure, nutrition support, and health-oriented outreach so communities get help that is useful now and meaningful later.
+            We work to turn remembrance into service by reaching children and families who need steady support in daily life, learning, nourishment, and health.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {stats.map((stat) => (
@@ -56,10 +62,10 @@ const About = () => {
         </div>
 
         <div className="card rounded-[2rem] p-6 sm:p-8">
-          <p className="section-kicker">Vision</p>
-          <h2 className="mt-3 text-2xl font-bold text-[var(--color-text)]">A future where support is not distant or confusing.</h2>
+          <p className="section-kicker">Our Inspiration</p>
+          <h2 className="mt-3 text-2xl font-bold text-[var(--color-text)]">Davis was a kind and compassionate child.</h2>
           <p className="mt-4 text-sm leading-7 text-[var(--color-muted)]">
-            A strong foundation website should feel trustworthy and calm. The same idea guides the work on the ground: make support easier to access and easier to understand.
+            His memory continues to inspire us to do good for society every day. Through this foundation, his name remains connected with kindness, service, and hope for families who need support.
           </p>
           <Link to="/impact" className="mt-5 inline-flex text-sm font-bold text-[var(--color-primary)] transition hover:text-[var(--color-primary-dark)]">Open impact page</Link>
         </div>

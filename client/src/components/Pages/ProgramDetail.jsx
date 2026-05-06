@@ -1,7 +1,11 @@
 import { Link, useParams } from "react-router-dom";
+import { Autoplay, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import educationImage from "../../assets/students.jpeg";
 import codingImage from "../../assets/program-codding.jpg";
-import foodImage from "../../assets/meals.jpeg";
+import foodImageOne from "../../assets/food1.jpeg";
+import foodImageTwo from "../../assets/food2.jpeg";
+import foodImageThree from "../../assets/food3.jpeg";
 import healthcareImage from "../../assets/program-healthcare.jpg";
 
 const programDetails = {
@@ -43,7 +47,7 @@ const programDetails = {
   },
   food: {
     title: "Food Distribution",
-    image: foodImage,
+    images: [foodImageOne, foodImageTwo, foodImageThree],
     intro:
       "Davis Girdhar Foundation provides food support to children and families so immediate needs do not become a barrier to health, dignity, and learning.",
     overview:
@@ -123,7 +127,27 @@ const ProgramDetail = () => {
           </div>
 
           <div className="overflow-hidden rounded-[2.2rem] shadow-[var(--shadow-soft)]">
-            <img src={program.image} alt={program.title} className="h-full min-h-[340px] w-full object-cover" />
+            {program.images ? (
+              <Swiper
+                modules={[Autoplay, Pagination]}
+                autoplay={{ delay: 2600, disableOnInteraction: false }}
+                loop
+                pagination={{ clickable: true }}
+                className="program-food-swiper h-full min-h-[340px] w-full"
+              >
+                {program.images.map((image, index) => (
+                  <SwiperSlide key={image}>
+                    <img
+                      src={image}
+                      alt={`${program.title} ${index + 1}`}
+                      className="h-full min-h-[340px] w-full object-cover"
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <img src={program.image} alt={program.title} className="h-full min-h-[340px] w-full object-cover" />
+            )}
           </div>
         </div>
       </section>

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Home from "./components/Pages/Home";
@@ -16,6 +16,16 @@ import Team from "./components/Pages/Team";
 import ProgramDetail from "./components/Pages/ProgramDetail";
 import Loader from "./components/Pages/Loader";
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 function App() {
   const [loading, setLoading] = useState(true);
 
@@ -25,6 +35,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-transparent text-[var(--color-text)]">
+      <ScrollToTop />
       <Navbar />
       <main className="pt-20 sm:pt-24">
         <Routes>

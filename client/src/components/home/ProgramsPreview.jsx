@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
+import { Autoplay, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import codingImage from "../../assets/program-codding.jpg";
 import educationImage from "../../assets/students.jpeg";
-import foodImage from "../../assets/meals.jpeg";
+import foodImageOne from "../../assets/food1.jpeg";
+import foodImageTwo from "../../assets/food2.jpeg";
+import foodImageThree from "../../assets/food3.jpeg";
 import healthcareImage from "../../assets/program-healthcare.jpg";
 
 const programs = [
@@ -23,7 +27,7 @@ const programs = [
     title: "Food and Nutrition",
     slug: "food",
     text: "Practical support for children and families through meals and food assistance.",
-    image: foodImage,
+    images: [foodImageOne, foodImageTwo, foodImageThree],
     to: "/programs/food",
   },
   {
@@ -54,7 +58,27 @@ const ProgramsPreview = () => {
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {programs.map((program) => (
             <article key={program.title} className="card overflow-hidden">
-              <img src={program.image} alt={program.title} className="h-56 w-full object-cover" />
+              {program.images ? (
+                <Swiper
+                  modules={[Autoplay, Pagination]}
+                  autoplay={{ delay: 2600, disableOnInteraction: false }}
+                  loop
+                  pagination={{ clickable: true }}
+                  className="program-food-swiper h-56 w-full"
+                >
+                  {program.images.map((image, index) => (
+                    <SwiperSlide key={image}>
+                      <img
+                        src={image}
+                        alt={`${program.title} ${index + 1}`}
+                        className="h-56 w-full object-cover"
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              ) : (
+                <img src={program.image} alt={program.title} className="h-56 w-full object-cover" />
+              )}
               <div className="p-6">
                 <h3 className="text-2xl font-bold text-[var(--color-text)]">{program.title}</h3>
                 <p className="mt-3 text-base leading-7 text-[var(--color-muted)]">{program.text}</p>

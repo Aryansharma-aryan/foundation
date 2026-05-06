@@ -1,4 +1,9 @@
 import { Link } from "react-router-dom";
+import { Autoplay, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import foodImageOne from "../../assets/food1.jpeg";
+import foodImageTwo from "../../assets/food2.jpeg";
+import foodImageThree from "../../assets/food3.jpeg";
 
 const galleryItems = [
   {
@@ -19,7 +24,7 @@ const galleryItems = [
   {
     title: "Food Support Drive",
     category: "Nutrition",
-    image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=900&q=80",
+    images: [foodImageOne, foodImageTwo, foodImageThree],
   },
   {
     title: "Village Outreach",
@@ -47,7 +52,27 @@ const Gallery = () => {
       <section className="shell grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {galleryItems.map((item) => (
           <article key={item.title} className="card overflow-hidden rounded-[2rem]">
-            <img src={item.image} alt={item.title} className="h-72 w-full object-cover" />
+            {item.images ? (
+              <Swiper
+                modules={[Autoplay, Pagination]}
+                autoplay={{ delay: 2600, disableOnInteraction: false }}
+                loop
+                pagination={{ clickable: true }}
+                className="program-food-swiper h-72 w-full"
+              >
+                {item.images.map((image, index) => (
+                  <SwiperSlide key={image}>
+                    <img
+                      src={image}
+                      alt={`${item.title} ${index + 1}`}
+                      className="h-72 w-full object-cover"
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <img src={item.image} alt={item.title} className="h-72 w-full object-cover" />
+            )}
             <div className="p-6">
               <p className="text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-primary)]">{item.category}</p>
               <h2 className="mt-3 text-2xl font-bold text-[var(--color-text)]">{item.title}</h2>

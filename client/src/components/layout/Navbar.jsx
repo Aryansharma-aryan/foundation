@@ -27,10 +27,6 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    setMobileOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
@@ -86,7 +82,10 @@ const Navbar = () => {
               <Link to="/get-involved" className="btn-secondary px-5 py-2.5 text-sm">
                 Volunteer
               </Link>
-              <Link to="/donate" className="btn-primary px-5 py-2.5 text-sm">
+              <Link
+                to="/donate"
+                className="btn-primary px-5 py-2.5 text-sm shadow-[0_18px_42px_rgba(225,106,31,0.38)] ring-2 ring-[rgba(245,187,74,0.34)] hover:shadow-[0_22px_52px_rgba(198,85,17,0.42)]"
+              >
                 Donate
               </Link>
             </div>
@@ -112,6 +111,7 @@ const Navbar = () => {
                   <Link
                     key={link.path}
                     to={link.path}
+                    onClick={() => setMobileOpen(false)}
                     className={`rounded-[1.25rem] px-4 py-3 text-base font-bold transition ${
                       isActive(link.path)
                         ? "bg-[var(--color-secondary)] text-[var(--color-primary)]"
@@ -121,10 +121,14 @@ const Navbar = () => {
                     {link.name}
                   </Link>
                 ))}
-                <Link to="/get-involved" className="btn-secondary mt-3">
+                <Link to="/get-involved" onClick={() => setMobileOpen(false)} className="btn-secondary mt-3">
                   Get Involved
                 </Link>
-                <Link to="/donate" className="btn-primary">
+                <Link
+                  to="/donate"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn-primary shadow-[0_18px_42px_rgba(225,106,31,0.38)] ring-2 ring-[rgba(245,187,74,0.34)]"
+                >
                   Donate Now
                 </Link>
               </nav>

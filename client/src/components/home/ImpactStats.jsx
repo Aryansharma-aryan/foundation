@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { Autoplay, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import studentsImage from "../../assets/students.jpeg";
-import mealsImage from "../../assets/meals.jpeg";
+import foodImageOne from "../../assets/food1.jpeg";
+import foodImageTwo from "../../assets/food2.jpeg";
+import foodImageThree from "../../assets/food3.jpeg";
 
 const stories = [
   {
@@ -13,7 +17,7 @@ const stories = [
     title: "Meals and Food Support",
     value: "1,200+",
     copy: "Practical meal and food assistance helping families manage immediate needs with dignity.",
-    image: mealsImage,
+    images: [foodImageOne, foodImageTwo, foodImageThree],
   },
 ];
 
@@ -42,7 +46,27 @@ const ImpactStats = () => {
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             {stories.map((story) => (
               <article key={story.title} className="overflow-hidden rounded-[2rem] border border-white/60 bg-white/88 shadow-[var(--shadow-card)]">
-                <img src={story.image} alt={story.title} className="h-64 w-full object-cover sm:h-72" />
+                {story.images ? (
+                  <Swiper
+                    modules={[Autoplay, Pagination]}
+                    autoplay={{ delay: 2600, disableOnInteraction: false }}
+                    loop
+                    pagination={{ clickable: true }}
+                    className="program-food-swiper h-64 w-full sm:h-72"
+                  >
+                    {story.images.map((image, index) => (
+                      <SwiperSlide key={image}>
+                        <img
+                          src={image}
+                          alt={`${story.title} ${index + 1}`}
+                          className="h-64 w-full object-cover sm:h-72"
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                ) : (
+                  <img src={story.image} alt={story.title} className="h-64 w-full object-cover sm:h-72" />
+                )}
                 <div className="p-6 sm:p-8">
                   <p className="text-5xl font-bold text-[var(--color-primary)]">{story.value}</p>
                   <h3 className="mt-2 text-3xl font-bold text-[var(--color-text)]">{story.title}</h3>
