@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const contactCards = [
   { label: "Phone", value: "+91 92152-00212", href: "tel:+919215200212" },
@@ -6,14 +9,71 @@ const contactCards = [
   { label: "Location", value: "C/o Sh. Sham Das, Umri, Mathana, Umri Thanesar, Kurukshetra, Haryana, 136131", href: "https://www.google.com/maps/search/C%2Fo+Sh.+Sham+Das%2C+Umri%2C+Mathana%2C+Umri+Thanesar%2C+Kurukshetra%2C+Haryana+136131" },
 ];
 
+const initialForm = {
+  fullName: "",
+  phone: "",
+  email: "",
+  topic: "",
+  message: "",
+};
+
 const Contact = () => {
+  const [form, setForm] = useState(initialForm);
+  const [status, setStatus] = useState({ type: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const updateField = (event) => {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const parseError = async (response) => {
+    try {
+      const data = await response.json();
+      return data.error || "Unable to send message.";
+    } catch {
+      return "Unable to send message.";
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!form.fullName || !form.phone || !form.email || !form.topic || !form.message) {
+      setStatus({ type: "error", message: "Please fill all fields before sending." });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatus({ type: "info", message: "Sending your message..." });
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        throw new Error(await parseError(response));
+      }
+
+      setForm(initialForm);
+      setStatus({ type: "success", message: "Message sent successfully. Our team will review it soon." });
+    } catch (error) {
+      setStatus({ type: "error", message: error.message || "Unable to send message." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="pb-12">
       <section className="shell section-space pt-10 sm:pt-14 text-center">
         <p className="section-kicker">Contact</p>
-        <h1 className="section-title mx-auto max-w-4xl">Direct contact details with a calmer, more professional layout.</h1>
+        <h1 className="section-title mx-auto max-w-4xl">Reach the foundation directly</h1>
         <p className="section-copy mx-auto">
-          This page keeps the important information visible without the oversized effects and duplicate styling from before.
+          Send your message through the form and it will reach the foundation team securely.
         </p>
       </section>
 
@@ -40,20 +100,35 @@ const Contact = () => {
 
         <div className="card rounded-[2rem] p-6 sm:p-8">
           <h2 className="text-2xl font-bold text-[var(--color-text)]">Send a quick message</h2>
-          <form className="mt-6 grid gap-4 sm:grid-cols-2">
-            <input className="input-field" placeholder="Full name" />
-            <input className="input-field" placeholder="Phone" />
-            <input className="input-field sm:col-span-2" placeholder="Email address" />
-            <select className="input-field sm:col-span-2" defaultValue="">
+          <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit}>
+            <input className="input-field" name="fullName" onChange={updateField} placeholder="Full name" value={form.fullName} />
+            <input className="input-field" name="phone" onChange={updateField} placeholder="Phone" value={form.phone} />
+            <input className="input-field sm:col-span-2" name="email" onChange={updateField} placeholder="Email address" type="email" value={form.email} />
+            <select className="input-field sm:col-span-2" name="topic" onChange={updateField} value={form.topic}>
               <option value="" disabled>Select a topic</option>
               <option>Volunteer</option>
               <option>Donation</option>
               <option>Partnership</option>
               <option>General inquiry</option>
             </select>
-            <textarea className="input-field min-h-36 sm:col-span-2" placeholder="Tell us how we can help" />
-            <button type="button" className="btn-primary sm:col-span-2 sm:w-fit">
-              Send Message
+            <textarea className="input-field min-h-36 sm:col-span-2" name="message" onChange={updateField} placeholder="Tell us how we can help" value={form.message} />
+
+            {status.message && (
+              <div
+                className={`rounded-2xl border px-4 py-3 text-sm font-semibold sm:col-span-2 ${
+                  status.type === "success"
+                    ? "border-green-200 bg-green-50 text-green-800"
+                    : status.type === "error"
+                      ? "border-red-200 bg-red-50 text-red-800"
+                      : "border-[var(--color-line)] bg-white text-[var(--color-muted)]"
+                }`}
+              >
+                {status.message}
+              </div>
+            )}
+
+            <button disabled={isSubmitting} type="submit" className="btn-primary sm:col-span-2 sm:w-fit">
+              {isSubmitting ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>

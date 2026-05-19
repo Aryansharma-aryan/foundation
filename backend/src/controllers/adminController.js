@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { findAllContactMessages } from "../repositories/contactRepository.js";
 import { findAllDonations } from "../repositories/donationRepository.js";
 import { cleanString } from "../utils/sanitize.js";
 
@@ -53,6 +54,23 @@ export const getAdminDonations = async (_req, res) => {
       billing: donation.billing,
       createdAt: donation.createdAt,
       receiptUrl: `/api/invoices/${donation.invoiceId}/download`,
+    })),
+  });
+};
+
+export const getAdminContactMessages = async (_req, res) => {
+  const messages = await findAllContactMessages();
+
+  return res.json({
+    messages: messages.map((message) => ({
+      id: message._id,
+      fullName: message.fullName,
+      phone: message.phone,
+      email: message.email,
+      topic: message.topic,
+      message: message.message,
+      status: message.status,
+      createdAt: message.createdAt,
     })),
   });
 };

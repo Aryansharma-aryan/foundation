@@ -16,6 +16,8 @@ const Admin = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [token, setToken] = useState(() => localStorage.getItem(tokenKey) || "");
   const [donations, setDonations] = useState([]);
+  const [contactMessages, setContactMessages] = useState([]);
+  const [activeTab, setActiveTab] = useState("payments");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,30 +40,41 @@ const Admin = () => {
     }
   };
 
-  const fetchDonations = async (adminToken = token) => {
+  const fetchAdminData = async (adminToken = token) => {
     if (!adminToken) return;
 
     setIsLoading(true);
     setMessage("");
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/admin/donations`, {
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-        },
-      });
+      const headers = { Authorization: `Bearer ${adminToken}` };
+      const [donationResponse, messageResponse] = await Promise.all([
+        fetch(`${apiBaseUrl}/api/admin/donations`, { headers }),
+        fetch(`${apiBaseUrl}/api/admin/contact-messages`, { headers }),
+      ]);
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      if (!donationResponse.ok) {
+        if (donationResponse.status === 401) {
           localStorage.removeItem(tokenKey);
           setToken("");
         }
 
-        throw new Error(await parseError(response));
+        throw new Error(await parseError(donationResponse));
       }
 
-      const data = await response.json();
-      setDonations(data.donations || []);
+      if (!messageResponse.ok) {
+        if (messageResponse.status === 401) {
+          localStorage.removeItem(tokenKey);
+          setToken("");
+        }
+
+        throw new Error(await parseError(messageResponse));
+      }
+
+      const donationData = await donationResponse.json();
+      const messageData = await messageResponse.json();
+      setDonations(donationData.donations || []);
+      setContactMessages(messageData.messages || []);
     } catch (error) {
       setMessage(error.message || "Unable to load admin data.");
     } finally {
@@ -70,7 +83,7 @@ const Admin = () => {
   };
 
   useEffect(() => {
-    fetchDonations();
+    fetchAdminData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
@@ -105,6 +118,7 @@ const Admin = () => {
     localStorage.removeItem(tokenKey);
     setToken("");
     setDonations([]);
+    setContactMessages([]);
     setMessage("");
   };
 
@@ -150,10 +164,10 @@ const Admin = () => {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="section-kicker">Admin</p>
-          <h1 className="mt-3 text-3xl font-bold text-[var(--color-text)] sm:text-5xl">Donation payments</h1>
+          <h1 className="mt-3 text-3xl font-bold text-[var(--color-text)] sm:text-5xl">Admin dashboard</h1>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="btn-secondary" disabled={isLoading} onClick={() => fetchDonations()} type="button">
+          <button className="btn-secondary" disabled={isLoading} onClick={() => fetchAdminData()} type="button">
             Refresh
           </button>
           <button className="btn-primary" onClick={handleLogout} type="button">
@@ -172,9 +186,26 @@ const Admin = () => {
           <p className="mt-2 text-3xl font-bold text-[var(--color-primary)]">{formatAmount(totalAmount)}</p>
         </div>
         <div className="card p-5">
-          <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Receipt status</p>
-          <p className="mt-2 text-3xl font-bold text-[var(--color-text)]">Attached</p>
+          <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Messages</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--color-text)]">{contactMessages.length}</p>
         </div>
+      </div>
+
+      <div className="mt-8 flex flex-wrap gap-3">
+        <button
+          className={activeTab === "payments" ? "btn-primary" : "btn-secondary"}
+          onClick={() => setActiveTab("payments")}
+          type="button"
+        >
+          Payments
+        </button>
+        <button
+          className={activeTab === "messages" ? "btn-primary" : "btn-secondary"}
+          onClick={() => setActiveTab("messages")}
+          type="button"
+        >
+          Contact Messages
+        </button>
       </div>
 
       {message && (
@@ -183,6 +214,7 @@ const Admin = () => {
         </div>
       )}
 
+      {activeTab === "payments" && (
       <div className="mt-8 grid gap-5">
         {isLoading && <div className="card p-6 text-[var(--color-muted)]">Loading payment details...</div>}
 
@@ -243,6 +275,51 @@ const Admin = () => {
           </article>
         ))}
       </div>
+      )}
+
+      {activeTab === "messages" && (
+        <div className="mt-8 grid gap-5">
+          {isLoading && <div className="card p-6 text-[var(--color-muted)]">Loading contact messages...</div>}
+
+          {!isLoading && contactMessages.length === 0 && (
+            <div className="card p-6 text-[var(--color-muted)]">No contact messages found yet.</div>
+          )}
+
+          {contactMessages.map((contactMessage) => (
+            <article key={contactMessage.id} className="card p-5 sm:p-6">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <p className="text-sm font-bold uppercase text-[var(--color-primary)]">{contactMessage.topic}</p>
+                  <h2 className="mt-2 text-2xl font-bold text-[var(--color-text)]">{contactMessage.fullName}</h2>
+                  <p className="mt-1 text-[var(--color-muted)]">{formatDate(contactMessage.createdAt)}</p>
+                </div>
+                <span className="w-fit rounded-full bg-orange-50 px-4 py-2 text-sm font-bold text-[var(--color-primary)]">
+                  {contactMessage.status || "new"}
+                </span>
+              </div>
+
+              <div className="mt-6 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+                <div className="rounded-2xl border border-[var(--color-line)] bg-white p-4">
+                  <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Contact</p>
+                  <a className="mt-2 block text-sm font-semibold text-[var(--color-text)]" href={`mailto:${contactMessage.email}`}>
+                    {contactMessage.email}
+                  </a>
+                  <a className="mt-1 block text-sm font-semibold text-[var(--color-text)]" href={`tel:${contactMessage.phone}`}>
+                    {contactMessage.phone}
+                  </a>
+                </div>
+
+                <div className="rounded-2xl border border-[var(--color-line)] bg-white p-4">
+                  <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Message</p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-[var(--color-text)]">
+                    {contactMessage.message}
+                  </p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import razorpay from "../config/razorpay.js";
 import { saveDonation } from "../repositories/donationRepository.js";
+import { sendDonationReceiptEmail } from "../services/emailService.js";
 import { makeInvoiceId } from "../utils/invoiceId.js";
 import { sendRazorpayError } from "../utils/razorpayErrors.js";
 import { cleanString, isMissingRequiredDetails, normalizeDetails } from "../utils/sanitize.js";
@@ -74,6 +75,10 @@ export const verifyPayment = async (req, res) => {
       currency: order.currency,
       status: "paid",
       ...details,
+    });
+
+    sendDonationReceiptEmail(donation).catch((error) => {
+      console.error("Donation receipt email failed.", error);
     });
 
     return res.json({
