@@ -19,6 +19,7 @@ const Admin = () => {
   const [contactMessages, setContactMessages] = useState([]);
   const [activeTab, setActiveTab] = useState("payments");
   const [message, setMessage] = useState("");
+  const [messagesNotice, setMessagesNotice] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const totalAmount = useMemo(
@@ -45,13 +46,11 @@ const Admin = () => {
 
     setIsLoading(true);
     setMessage("");
+    setMessagesNotice("");
 
     try {
       const headers = { Authorization: `Bearer ${adminToken}` };
-      const [donationResponse, messageResponse] = await Promise.all([
-        fetch(`${apiBaseUrl}/api/admin/donations`, { headers }),
-        fetch(`${apiBaseUrl}/api/admin/contact-messages`, { headers }),
-      ]);
+      const donationResponse = await fetch(`${apiBaseUrl}/api/admin/donations`, { headers });
 
       if (!donationResponse.ok) {
         if (donationResponse.status === 401) {
@@ -62,18 +61,28 @@ const Admin = () => {
         throw new Error(await parseError(donationResponse));
       }
 
+      const donationData = await donationResponse.json();
+      setDonations(donationData.donations || []);
+
+      const messageResponse = await fetch(`${apiBaseUrl}/api/admin/contact-messages`, { headers });
+
       if (!messageResponse.ok) {
         if (messageResponse.status === 401) {
           localStorage.removeItem(tokenKey);
           setToken("");
+          throw new Error(await parseError(messageResponse));
+        }
+
+        if (messageResponse.status === 404) {
+          setContactMessages([]);
+          setMessagesNotice("Contact messages will appear after the backend redeploy finishes.");
+          return;
         }
 
         throw new Error(await parseError(messageResponse));
       }
 
-      const donationData = await donationResponse.json();
       const messageData = await messageResponse.json();
-      setDonations(donationData.donations || []);
       setContactMessages(messageData.messages || []);
     } catch (error) {
       setMessage(error.message || "Unable to load admin data.");
@@ -120,6 +129,7 @@ const Admin = () => {
     setDonations([]);
     setContactMessages([]);
     setMessage("");
+    setMessagesNotice("");
   };
 
   if (!token) {
@@ -211,6 +221,12 @@ const Admin = () => {
       {message && (
         <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">
           {message}
+        </div>
+      )}
+
+      {messagesNotice && (
+        <div className="mt-6 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-800">
+          {messagesNotice}
         </div>
       )}
 
