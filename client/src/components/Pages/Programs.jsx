@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom";
-import { Autoplay, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
 import codingImage from "../../assets/program-codding.jpg";
 import educationImage from "../../assets/students.jpeg";
-import foodImageOne from "../../assets/food1.jpeg";
-import foodImageTwo from "../../assets/food2.jpeg";
-import foodImageThree from "../../assets/food3.jpeg";
+import foodImage from "../../assets/meals.jpeg";
 import healthcareImage from "../../assets/program-healthcare.jpg";
+import food1 from "../../assets/food1.jpeg";
+import food2 from "../../assets/food2.jpeg"
+import food3 from "../../assets/food3.jpeg"
 
 const programs = [
   {
@@ -31,7 +30,7 @@ const programs = [
     title: "Food Distribution",
     slug: "food",
     summary: "Meal and ration support designed to strengthen health, dignity, and family stability.",
-    images: [foodImageOne, foodImageTwo, foodImageThree],
+    image: foodImage,
     points: ["Meals and rations", "Family support", "Community-focused delivery"],
     detail:
       "This work helps reduce immediate pressure on families and supports better daily well-being for children and the community.",
@@ -61,27 +60,7 @@ const Programs = () => {
       <section className="shell grid gap-6">
         {programs.map((program) => (
           <article key={program.title} className="card overflow-hidden rounded-[2rem] lg:grid lg:grid-cols-[0.95fr_1.05fr]">
-            {program.images ? (
-              <Swiper
-                modules={[Autoplay, Pagination]}
-                autoplay={{ delay: 2600, disableOnInteraction: false }}
-                loop
-                pagination={{ clickable: true }}
-                className="program-food-swiper h-72 w-full lg:h-full"
-              >
-                {program.images.map((image, index) => (
-                  <SwiperSlide key={image}>
-                    <img
-                      src={image}
-                      alt={`${program.title} ${index + 1}`}
-                      className="h-72 w-full object-cover lg:h-full"
-                    />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            ) : (
-              <img src={program.image} alt={program.title} className="h-72 w-full object-cover lg:h-full" />
-            )}
+            <img src={program.image} alt={program.title} className="h-72 w-full object-cover lg:h-full" />
             <div className="p-6 sm:p-8">
               <h2 className="text-3xl font-bold text-[var(--color-text)]">{program.title}</h2>
               <p className="mt-4 text-base leading-8 text-[var(--color-muted)]">{program.summary}</p>

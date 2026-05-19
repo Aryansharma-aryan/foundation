@@ -15,6 +15,7 @@ import Partners from "./components/Pages/Partners";
 import Team from "./components/Pages/Team";
 import ProgramDetail from "./components/Pages/ProgramDetail";
 import Loader from "./components/Pages/Loader";
+import Admin from "./components/Pages/Admin";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -51,6 +52,7 @@ function App() {
           <Route path="/gallery" element={<Gallary />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
       <Footer />

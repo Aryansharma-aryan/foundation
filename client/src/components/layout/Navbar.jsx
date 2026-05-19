@@ -79,6 +79,9 @@ const Navbar = () => {
             </nav>
 
             <div className="hidden items-center gap-3 xl:flex">
+              <Link to="/admin" className="btn-secondary px-5 py-2.5 text-sm">
+                Admin
+              </Link>
               <Link to="/get-involved" className="btn-secondary px-5 py-2.5 text-sm">
                 Volunteer
               </Link>
@@ -123,6 +126,9 @@ const Navbar = () => {
                 ))}
                 <Link to="/get-involved" onClick={() => setMobileOpen(false)} className="btn-secondary mt-3">
                   Get Involved
+                </Link>
+                <Link to="/admin" onClick={() => setMobileOpen(false)} className="btn-secondary">
+                  Admin Login
                 </Link>
                 <Link
                   to="/donate"
