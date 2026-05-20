@@ -87,10 +87,6 @@ const Donate = () => {
       return "Please fill all required donor and billing details.";
     }
 
-    if (!razorpayKeyId) {
-      return "Razorpay key is missing. Please check the frontend .env file.";
-    }
-
     if (!window.Razorpay) {
       return "Razorpay checkout could not load. Please refresh and try again.";
     }
@@ -133,9 +129,14 @@ const Donate = () => {
       }
 
       const order = await orderResponse.json();
+      const checkoutKeyId = order.key_id || razorpayKeyId;
+
+      if (!checkoutKeyId) {
+        throw new Error("Razorpay key is missing. Please check the backend environment variables.");
+      }
 
       const checkout = new window.Razorpay({
-        key: razorpayKeyId,
+        key: checkoutKeyId,
         amount: order.amount,
         currency: order.currency,
         name: "Davis Girdhar Foundation",

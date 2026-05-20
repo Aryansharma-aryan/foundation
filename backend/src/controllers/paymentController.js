@@ -40,6 +40,7 @@ export const createOrder = async (req, res) => {
       amount: order.amount,
       currency: order.currency,
       receipt: order.receipt,
+      key_id: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
     return sendRazorpayError(res, error, "Unable to create Razorpay order.");
