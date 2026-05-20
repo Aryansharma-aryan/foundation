@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { apiBaseUrl } from "../../config/api";
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const tokenKey = "dgf_admin_token";
 
 const formatAmount = (amount, currency = "INR") =>

@@ -25,19 +25,35 @@ const allowedOrigins = new Set([
     .filter(Boolean),
 ]);
 
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.has(origin)) return true;
+
+  try {
+    const { hostname, protocol } = new URL(origin);
+    return (
+      protocol === "https:" &&
+      (hostname === "davisgirdharfoundation.com" || hostname.endsWith(".davisgirdharfoundation.com"))
+    );
+  } catch {
+    return false;
+  }
+};
+
 app.set("trust proxy", 1);
 app.use(helmet());
 app.use(compression());
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.has(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
         return;
       }
 
       callback(new Error("Not allowed by CORS"));
     },
+    maxAge: 86400,
   }),
 );
 app.use(express.json({ limit: "1mb" }));
@@ -47,6 +63,15 @@ app.use("/api", paymentRoutes);
 app.use("/api", invoiceRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", contactRoutes);
+
+app.use((error, _req, res, next) => {
+  if (error?.message === "Not allowed by CORS") {
+    res.status(403).json({ error: "This origin is not allowed to access the API." });
+    return;
+  }
+
+  next(error);
+});
 
 app.use((_req, res) => {
   res.status(404).json({ error: "API route not found." });
