@@ -14,6 +14,8 @@ const defaultOrigins = [
   "http://127.0.0.1:5173",
   "https://www.davisgirdharfoundation.com",
   "https://davisgirdharfoundation.com",
+  "https://www.davisgirdharfoundation.org",
+  "https://davisgirdharfoundation.org",
   "https://foundation-q2nx.onrender.com",
 ];
 
@@ -31,9 +33,11 @@ const isAllowedOrigin = (origin) => {
 
   try {
     const { hostname, protocol } = new URL(origin);
+    const allowedSiteDomains = ["davisgirdharfoundation.com", "davisgirdharfoundation.org"];
+
     return (
       protocol === "https:" &&
-      (hostname === "davisgirdharfoundation.com" || hostname.endsWith(".davisgirdharfoundation.com"))
+      allowedSiteDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`))
     );
   } catch {
     return false;
