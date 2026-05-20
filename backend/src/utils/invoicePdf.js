@@ -182,7 +182,7 @@ const drawFooter = (doc) => {
     .fontSize(8.8)
     .fillColor(colors.muted)
     .text(
-      "Davis Girdhar Foundation is not associated with Form 12A/Form 10AC or Form 80G/Form 10AC for this receipt; tax benefit eligibility is not claimed here.",
+      "The Organisation is currently not registered under Section 12AB and 80G of the Income Tax Act 1961 , or under any other similar provisions of any applicable law, including any amendments modification, or re-enactment thereof. Therefore, no tax exemption or tax benefit can be claimed on this donation.",
       page.left,
       y + 94,
       { width: page.width, lineGap: 2 },
