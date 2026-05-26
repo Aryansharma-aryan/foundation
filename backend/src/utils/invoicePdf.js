@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import PDFDocument from "pdfkit";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const logoPath = path.resolve(__dirname, "../../../client/src/assets/logo.jpeg");
+const logoPath = path.resolve(__dirname, "../../../client/src/assets/davisnew.jpeg");
 
 const colors = {
   ink: "#2f241d",
@@ -29,6 +29,68 @@ const formatAmount = (amount, currency = "INR") =>
     minimumFractionDigits: 2,
   }).format((amount || 0) / 100);
 
+const ones = [
+  "",
+  "One",
+  "Two",
+  "Three",
+  "Four",
+  "Five",
+  "Six",
+  "Seven",
+  "Eight",
+  "Nine",
+  "Ten",
+  "Eleven",
+  "Twelve",
+  "Thirteen",
+  "Fourteen",
+  "Fifteen",
+  "Sixteen",
+  "Seventeen",
+  "Eighteen",
+  "Nineteen",
+];
+
+const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+const twoDigitWords = (number) => {
+  if (number < 20) return ones[number];
+  return [tens[Math.floor(number / 10)], ones[number % 10]].filter(Boolean).join(" ");
+};
+
+const threeDigitWords = (number) => {
+  const hundred = Math.floor(number / 100);
+  const rest = number % 100;
+  return [hundred ? `${ones[hundred]} Hundred` : "", rest ? twoDigitWords(rest) : ""].filter(Boolean).join(" ");
+};
+
+const integerToIndianWords = (number) => {
+  if (!number) return "Zero";
+
+  const parts = [
+    { value: Math.floor(number / 10000000), label: "Crore" },
+    { value: Math.floor((number % 10000000) / 100000), label: "Lakh" },
+    { value: Math.floor((number % 100000) / 1000), label: "Thousand" },
+    { value: number % 1000, label: "" },
+  ];
+
+  return parts
+    .filter((part) => part.value)
+    .map((part) => `${part.value < 100 ? twoDigitWords(part.value) : threeDigitWords(part.value)} ${part.label}`.trim())
+    .join(" ");
+};
+
+const formatAmountWords = (amount) => {
+  const totalPaise = Math.max(0, Number(amount) || 0);
+  const rupees = Math.floor(totalPaise / 100);
+  const paise = totalPaise % 100;
+  const rupeeText = `Indian Rupees ${integerToIndianWords(rupees)}`;
+
+  if (!paise) return `${rupeeText} Only`;
+  return `${rupeeText} and ${twoDigitWords(paise)} Paise Only`;
+};
+
 const formatDate = (value) =>
   new Date(value || Date.now()).toLocaleString("en-IN", {
     day: "2-digit",
@@ -43,13 +105,18 @@ const safeText = (value) => {
   return value ? String(value) : "N/A";
 };
 
-const drawLabelValue = (doc, label, value, x, y, width) => {
+const drawLabelValue = (doc, label, value, x, y, width, options = {}) => {
+  const valueSize = options.valueSize || 10;
+  const valueHeight = options.valueHeight || 34;
+
   doc.font("Helvetica-Bold").fontSize(8).fillColor(colors.muted).text(label.toUpperCase(), x, y, {
     width,
     characterSpacing: 0.35,
   });
-  doc.font("Helvetica").fontSize(10.5).fillColor(colors.ink).text(safeText(value), x, y + 14, {
+  doc.font("Helvetica").fontSize(valueSize).fillColor(colors.ink).text(safeText(value), x, y + 14, {
     width,
+    height: valueHeight,
+    ellipsis: true,
     lineGap: 2,
   });
 };
@@ -105,8 +172,8 @@ const drawHeader = (doc, donation) => {
 
 const drawReceiptSummary = (doc, donation) => {
   const y = 198;
-  drawCard(doc, page.left, y, 246, 88);
-  drawCard(doc, page.left + 265, y, 246, 88);
+  drawCard(doc, page.left, y, 246, 116);
+  drawCard(doc, page.left + 265, y, 246, 116);
 
   doc.font("Helvetica-Bold").fontSize(9).fillColor(colors.muted).text("DONATION AMOUNT", page.left + 18, y + 18);
   doc
@@ -114,46 +181,61 @@ const drawReceiptSummary = (doc, donation) => {
     .fontSize(24)
     .fillColor(colors.primaryDark)
     .text(formatAmount(donation.amount, donation.currency), page.left + 18, y + 36, { width: 210 });
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(8)
+    .fillColor(colors.muted)
+    .text("AMOUNT IN WORDS", page.left + 18, y + 72, { width: 210, characterSpacing: 0.35 });
+  doc
+    .font("Helvetica")
+    .fontSize(9.2)
+    .fillColor(colors.ink)
+    .text(formatAmountWords(donation.amount), page.left + 18, y + 86, {
+      width: 210,
+      height: 24,
+      ellipsis: true,
+      lineGap: 1,
+    });
 
   drawLabelValue(doc, "Receipt Date", formatDate(donation.createdAt), page.left + 283, y + 18, 100);
   drawLabelValue(doc, "Currency", donation.currency, page.left + 405, y + 18, 95);
-  drawLabelValue(doc, "Payment Status", donation.status || "paid", page.left + 283, y + 54, 100);
-  drawLabelValue(doc, "Mode", "Razorpay Checkout", page.left + 405, y + 54, 95);
+  drawLabelValue(doc, "Payment Status", donation.status || "paid", page.left + 283, y + 70, 100);
+  drawLabelValue(doc, "Mode", "Razorpay Checkout", page.left + 405, y + 70, 95);
 };
 
 const drawDonorAndBilling = (doc, donation) => {
-  const y = 318;
+  const y = 346;
   drawSectionTitle(doc, "Donor and Billing Details", y);
 
-  drawCard(doc, page.left, y + 34, 246, 148);
-  drawCard(doc, page.left + 265, y + 34, 246, 148);
+  drawCard(doc, page.left, y + 34, 246, 136);
+  drawCard(doc, page.left + 265, y + 34, 246, 136);
 
-  drawLabelValue(doc, "Donor Name", donation.donor?.fullName, page.left + 18, y + 54, 210);
-  drawLabelValue(doc, "Email", donation.donor?.email, page.left + 18, y + 94, 210);
-  drawLabelValue(doc, "Phone", donation.donor?.phone, page.left + 18, y + 134, 210);
+  drawLabelValue(doc, "Donor Name", donation.donor?.fullName, page.left + 18, y + 52, 210);
+  drawLabelValue(doc, "Email", donation.donor?.email, page.left + 18, y + 88, 210, { valueSize: 9.4 });
+  drawLabelValue(doc, "Phone", donation.donor?.phone, page.left + 18, y + 124, 210);
 
   const address = [donation.billing?.addressLine1, donation.billing?.addressLine2].filter(Boolean).join(", ");
   const cityLine = [donation.billing?.city, donation.billing?.state, donation.billing?.postalCode]
     .filter(Boolean)
     .join(", ");
 
-  drawLabelValue(doc, "Billing Address", address, page.left + 283, y + 54, 210);
-  drawLabelValue(doc, "City / State / PIN", cityLine, page.left + 283, y + 100, 210);
-  drawLabelValue(doc, "Country / PAN", `${safeText(donation.billing?.country)} / ${safeText(donation.billing?.pan)}`, page.left + 283, y + 140, 210);
+  drawLabelValue(doc, "Billing Address", address, page.left + 283, y + 52, 210, { valueSize: 9.4, valueHeight: 32 });
+  drawLabelValue(doc, "City / State / PIN", cityLine, page.left + 283, y + 92, 210);
+  drawLabelValue(doc, "Country / PAN", `${safeText(donation.billing?.country)} / ${safeText(donation.billing?.pan)}`, page.left + 283, y + 128, 210);
 };
 
 const drawPaymentReferences = (doc, donation) => {
-  const y = 530;
+  const y = 548;
   drawSectionTitle(doc, "Payment Reference", y);
-  drawCard(doc, page.left, y + 34, page.width, 92);
+  drawCard(doc, page.left, y + 34, page.width, 86);
 
-  drawLabelValue(doc, "Razorpay Payment ID", donation.paymentId, page.left + 18, y + 54, 230);
-  drawLabelValue(doc, "Razorpay Order ID", donation.orderId, page.left + 270, y + 54, 220);
-  drawLabelValue(doc, "Donation Note", donation.donor?.note || "No note provided", page.left + 18, y + 94, 475);
+  drawLabelValue(doc, "Razorpay Payment ID", donation.paymentId, page.left + 18, y + 52, 230, { valueSize: 9.2 });
+  drawLabelValue(doc, "Razorpay Order ID", donation.orderId, page.left + 270, y + 52, 220, { valueSize: 9.2 });
+  drawLabelValue(doc, "Donation Note", donation.donor?.note || "No note provided", page.left + 18, y + 88, 475, { valueSize: 9.2, valueHeight: 24 });
 };
 
 const drawFooter = (doc) => {
-  const y = 680;
+  const y = 674;
   drawDivider(doc, y);
 
   doc
@@ -169,22 +251,6 @@ const drawFooter = (doc) => {
       "This receipt was generated only after successful Razorpay signature verification on the Davis Girdhar Foundation server.",
       page.left,
       y + 36,
-      { width: page.width, lineGap: 2 },
-    );
-
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(9)
-    .fillColor(colors.primaryDark)
-    .text("Tax registration note", page.left, y + 78);
-  doc
-    .font("Helvetica")
-    .fontSize(8.8)
-    .fillColor(colors.muted)
-    .text(
-      "The Organisation is currently not registered under Section 12AB and 80G of the Income Tax Act 1961 , or under any other similar provisions of any applicable law, including any amendments modification, or re-enactment thereof. Therefore, no tax exemption or tax benefit can be claimed on this donation.",
-      page.left,
-      y + 94,
       { width: page.width, lineGap: 2 },
     );
 

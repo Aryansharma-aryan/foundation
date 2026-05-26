@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { apiBaseUrl } from "../../config/api";
 
 const donationOptions = [
@@ -30,6 +31,7 @@ const Donate = () => {
   const [status, setStatus] = useState({ type: "", message: "" });
   const [isPaying, setIsPaying] = useState(false);
   const [invoiceUrl, setInvoiceUrl] = useState("");
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
 
   const amountInPaise = useMemo(() => {
     const rupees = Number(form.amount);
@@ -85,6 +87,10 @@ const Donate = () => {
     const missingField = requiredFields.find((field) => !form[field].trim());
     if (missingField) {
       return "Please fill all required donor and billing details.";
+    }
+
+    if (!hasAcceptedTerms) {
+      return "Please read and agree to the Terms & Conditions and Privacy Policy before proceeding to payment.";
     }
 
     if (!window.Razorpay) {
@@ -283,6 +289,26 @@ const Donate = () => {
             </div>
 
             <textarea className="input-field min-h-28" name="note" onChange={updateField} placeholder="Optional note for the team" value={form.note} />
+
+            <label className="flex items-start gap-3 rounded-2xl border border-[var(--color-line)] bg-[var(--color-bg)] p-4 text-sm leading-6 text-[var(--color-muted)]">
+              <input
+                checked={hasAcceptedTerms}
+                className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-primary)]"
+                onChange={(event) => setHasAcceptedTerms(event.target.checked)}
+                type="checkbox"
+              />
+              <span>
+                I have read and agree to the{" "}
+                <Link className="font-bold text-[var(--color-primary)] underline-offset-4 hover:underline" to="/terms-and-conditions">
+                  Terms & Conditions
+                </Link>{" "}
+                and{" "}
+                <Link className="font-bold text-[var(--color-primary)] underline-offset-4 hover:underline" to="/privacy-policy">
+                  Privacy Policy
+                </Link>
+                . I understand that donations made to Davis Girdhar Foundation are voluntary, generally non-refundable, and currently do not qualify for tax benefits under Section 12AB or Section 80G of the Income Tax Act, 1961.
+              </span>
+            </label>
 
             {status.message && (
               <div

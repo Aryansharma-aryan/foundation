@@ -17,6 +17,8 @@ const groups = [
       { label: "Partners", to: "/partners" },
       { label: "Gallery", to: "/gallery" },
       { label: "Contact", to: "/contact" },
+      { label: "Privacy Policy", to: "/privacy-policy" },
+      { label: "Terms & Conditions", to: "/terms-and-conditions" },
     ],
   },
 ];

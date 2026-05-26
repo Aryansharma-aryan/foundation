@@ -16,6 +16,8 @@ import Team from "./components/Pages/Team";
 import ProgramDetail from "./components/Pages/ProgramDetail";
 import Loader from "./components/Pages/Loader";
 import Admin from "./components/Pages/Admin";
+import TermsConditions from "./components/Pages/TermsConditions";
+import PrivacyPolicy from "./components/Pages/PrivacyPolicy";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -52,6 +54,8 @@ function App() {
           <Route path="/gallery" element={<Gallary />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/terms-and-conditions" element={<TermsConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
