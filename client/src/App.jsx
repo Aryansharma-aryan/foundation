@@ -19,6 +19,7 @@ import Loader from "./components/Pages/Loader";
 import Admin from "./components/Pages/Admin";
 import TermsConditions from "./components/Pages/TermsConditions";
 import PrivacyPolicy from "./components/Pages/PrivacyPolicy";
+import SeoManager from "./seo/SeoManager";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -81,6 +82,7 @@ function App() {
   return (
     <div className="min-h-screen bg-transparent text-[var(--color-text)]">
       <ScrollToTop />
+      <SeoManager />
       <VisitTracker />
       <Navbar />
       <main className="pt-20 sm:pt-24">
