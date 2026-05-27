@@ -5,11 +5,15 @@ const tokenKey = "dgf_admin_token";
 
 const emptyAnalytics = {
   totals: {
+    visitors: 0,
+    pageViews: 0,
     users: 0,
     payments: 0,
     receivedAmount: 0,
   },
   periods: [],
+  dailyVisitors: [],
+  topPages: [],
 };
 
 const periodFallbacks = [
@@ -41,11 +45,145 @@ const buildFallbackPeriods = (donations) => {
     return {
       key: period.key,
       label: period.label,
+      visitorCount: 0,
+      pageViews: 0,
       userCount: users.size,
       paymentCount: periodDonations.length,
       totalAmount: periodDonations.reduce((sum, donation) => sum + (Number(donation.amount) || 0), 0),
     };
   });
+};
+
+const getMaxValue = (items, keys) =>
+  Math.max(
+    1,
+    ...items.flatMap((item) => keys.map((key) => Number(item[key]) || 0)),
+  );
+
+const MiniBarChart = ({ items }) => {
+  const maxValue = getMaxValue(items, ["visitorCount", "pageViews", "paymentCount"]);
+
+  return (
+    <div className="card p-5 sm:p-6">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Period comparison</p>
+          <h2 className="text-2xl font-bold text-[var(--color-text)]">Visitors, views, payments</h2>
+        </div>
+        <div className="flex flex-wrap gap-3 text-xs font-bold uppercase text-[var(--color-muted)]">
+          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[var(--color-primary)]" />Visitors</span>
+          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[#2f7d63]" />Views</span>
+          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[#6f5bd8]" />Payments</span>
+        </div>
+      </div>
+      <div className="mt-6 grid min-h-[240px] grid-cols-3 items-end gap-4">
+        {items.map((item) => (
+          <div className="grid h-full grid-rows-[1fr_auto] gap-3" key={item.key}>
+            <div className="flex h-48 items-end justify-center gap-2 rounded-2xl border border-[var(--color-line)] bg-white/70 p-3">
+              {[
+                ["visitorCount", "bg-[var(--color-primary)]"],
+                ["pageViews", "bg-[#2f7d63]"],
+                ["paymentCount", "bg-[#6f5bd8]"],
+              ].map(([key, color]) => (
+                <div
+                  className={`w-7 min-w-5 rounded-t-xl ${color}`}
+                  key={key}
+                  style={{ height: `${Math.max(8, ((Number(item[key]) || 0) / maxValue) * 170)}px` }}
+                  title={`${key}: ${item[key] || 0}`}
+                />
+              ))}
+            </div>
+            <p className="text-center text-sm font-bold text-[var(--color-muted)]">{item.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const TrendChart = ({ items }) => {
+  const maxValue = getMaxValue(items, ["visitors", "pageViews"]);
+  const width = 640;
+  const height = 210;
+  const padding = 30;
+  const pointGap = items.length > 1 ? (width - padding * 2) / (items.length - 1) : 0;
+
+  const getPoint = (item, index, key) => {
+    const x = padding + index * pointGap;
+    const y = height - padding - ((Number(item[key]) || 0) / maxValue) * (height - padding * 2);
+    return `${x},${y}`;
+  };
+
+  const visitorPoints = items.map((item, index) => getPoint(item, index, "visitors")).join(" ");
+  const pageViewPoints = items.map((item, index) => getPoint(item, index, "pageViews")).join(" ");
+
+  return (
+    <div className="card p-5 sm:p-6">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Last 7 days</p>
+          <h2 className="text-2xl font-bold text-[var(--color-text)]">Visitor trend</h2>
+        </div>
+        <div className="flex flex-wrap gap-3 text-xs font-bold uppercase text-[var(--color-muted)]">
+          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[var(--color-primary)]" />Visitors</span>
+          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[#2f7d63]" />Page views</span>
+        </div>
+      </div>
+      <div className="mt-5 overflow-x-auto">
+        <svg className="min-w-[640px]" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Visitor trend chart">
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
+            <line
+              key={ratio}
+              x1={padding}
+              x2={width - padding}
+              y1={padding + ratio * (height - padding * 2)}
+              y2={padding + ratio * (height - padding * 2)}
+              stroke="rgba(219,126,41,0.2)"
+            />
+          ))}
+          <polyline fill="none" points={pageViewPoints} stroke="#2f7d63" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" />
+          <polyline fill="none" points={visitorPoints} stroke="var(--color-primary)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" />
+          {items.map((item, index) => {
+            const [x, y] = getPoint(item, index, "visitors").split(",");
+            return <circle cx={x} cy={y} fill="var(--color-primary)" key={item.date} r="5" />;
+          })}
+          {items.map((item, index) => (
+            <text fill="#756053" fontSize="11" fontWeight="700" key={item.date} textAnchor="middle" x={padding + index * pointGap} y={height - 8}>
+              {item.label}
+            </text>
+          ))}
+        </svg>
+      </div>
+    </div>
+  );
+};
+
+const TopPagesChart = ({ pages }) => {
+  const maxValue = getMaxValue(pages, ["pageViews"]);
+
+  return (
+    <div className="card p-5 sm:p-6">
+      <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Top pages</p>
+      <h2 className="text-2xl font-bold text-[var(--color-text)]">Most viewed pages</h2>
+      <div className="mt-5 grid gap-3">
+        {(pages.length ? pages : [{ path: "No visits tracked yet", pageViews: 0, visitors: 0 }]).map((page) => (
+          <div className="grid gap-2" key={page.path}>
+            <div className="flex items-center justify-between gap-3 text-sm font-bold">
+              <span className="truncate text-[var(--color-text)]">{page.path}</span>
+              <span className="shrink-0 text-[var(--color-muted)]">{page.pageViews} views</span>
+            </div>
+            <div className="h-3 overflow-hidden rounded-full bg-[var(--color-bg-soft)]">
+              <div
+                className="h-full rounded-full bg-[var(--color-primary)]"
+                style={{ width: `${Math.max(3, ((Number(page.pageViews) || 0) / maxValue) * 100)}%` }}
+              />
+            </div>
+            <p className="text-xs font-semibold text-[var(--color-muted)]">{page.visitors} unique visitors</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const Admin = () => {
@@ -275,9 +413,17 @@ const Admin = () => {
         </div>
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <div className="card p-5">
-          <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Total users</p>
+          <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Visitors</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--color-text)]">{analytics.totals?.visitors || 0}</p>
+        </div>
+        <div className="card p-5">
+          <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Page views</p>
+          <p className="mt-2 text-3xl font-bold text-[var(--color-text)]">{analytics.totals?.pageViews || 0}</p>
+        </div>
+        <div className="card p-5">
+          <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Payment users</p>
           <p className="mt-2 text-3xl font-bold text-[var(--color-text)]">{uniqueDonorCount}</p>
         </div>
         <div className="card p-5">
@@ -287,10 +433,6 @@ const Admin = () => {
         <div className="card p-5">
           <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Total received</p>
           <p className="mt-2 text-3xl font-bold text-[var(--color-primary)]">{formatAmount(totalAmount)}</p>
-        </div>
-        <div className="card p-5">
-          <p className="text-sm font-bold uppercase text-[var(--color-muted)]">Messages</p>
-          <p className="mt-2 text-3xl font-bold text-[var(--color-text)]">{contactMessages.length}</p>
         </div>
       </div>
 
@@ -331,15 +473,23 @@ const Admin = () => {
             {periodAnalytics.map((period) => (
               <article className="card p-5 sm:p-6" key={period.key}>
                 <p className="text-sm font-bold uppercase text-[var(--color-muted)]">{period.label}</p>
-                <p className="mt-3 text-4xl font-bold text-[var(--color-text)]">{period.userCount}</p>
-                <p className="mt-1 text-sm font-semibold text-[var(--color-muted)]">unique users</p>
-                <div className="mt-5 grid grid-cols-2 gap-3">
+                <p className="mt-3 text-4xl font-bold text-[var(--color-text)]">{period.visitorCount || 0}</p>
+                <p className="mt-1 text-sm font-semibold text-[var(--color-muted)]">website visitors</p>
+                <div className="mt-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
+                  <div className="rounded-2xl border border-[var(--color-line)] bg-white p-3">
+                    <p className="text-xs font-bold uppercase text-[var(--color-muted)]">Page views</p>
+                    <p className="mt-1 text-xl font-bold text-[var(--color-text)]">{period.pageViews || 0}</p>
+                  </div>
+                  <div className="rounded-2xl border border-[var(--color-line)] bg-white p-3">
+                    <p className="text-xs font-bold uppercase text-[var(--color-muted)]">Pay users</p>
+                    <p className="mt-1 text-xl font-bold text-[var(--color-text)]">{period.userCount}</p>
+                  </div>
                   <div className="rounded-2xl border border-[var(--color-line)] bg-white p-3">
                     <p className="text-xs font-bold uppercase text-[var(--color-muted)]">Payments</p>
                     <p className="mt-1 text-xl font-bold text-[var(--color-text)]">{period.paymentCount}</p>
                   </div>
                   <div className="rounded-2xl border border-[var(--color-line)] bg-white p-3">
-                    <p className="text-xs font-bold uppercase text-[var(--color-muted)]">Amount</p>
+                    <p className="text-xs font-bold uppercase text-[var(--color-muted)]">Revenue</p>
                     <p className="mt-1 text-xl font-bold text-[var(--color-primary)]">
                       {formatAmount(period.totalAmount)}
                     </p>
@@ -347,6 +497,13 @@ const Admin = () => {
                 </div>
               </article>
             ))}
+          </div>
+
+          <MiniBarChart items={periodAnalytics} />
+
+          <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+            <TrendChart items={analytics.dailyVisitors || []} />
+            <TopPagesChart pages={analytics.topPages || []} />
           </div>
         </div>
       )}

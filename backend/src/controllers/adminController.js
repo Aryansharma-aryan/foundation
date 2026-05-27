@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { findAllContactMessages } from "../repositories/contactRepository.js";
 import { findAllDonations } from "../repositories/donationRepository.js";
+import { findAllVisits } from "../repositories/visitRepository.js";
 import { cleanString } from "../utils/sanitize.js";
 import { streamPaymentStatementPdf } from "../utils/paymentStatementPdf.js";
 
@@ -31,6 +32,78 @@ const buildDonationAnalytics = (donations) => {
       totalAmount: periodDonations.reduce((sum, donation) => sum + (Number(donation.amount) || 0), 0),
     };
   });
+};
+
+const getVisitorKey = (visit) => cleanString(visit?.visitorId).toLowerCase();
+
+const buildVisitAnalytics = (visits) => {
+  const now = Date.now();
+
+  return periodDefinitions.map((period) => {
+    const startsAt = new Date(now - period.days * 24 * 60 * 60 * 1000);
+    const periodVisits = visits.filter((visit) => new Date(visit.createdAt) >= startsAt);
+    const uniqueVisitors = new Set(periodVisits.map(getVisitorKey).filter(Boolean));
+
+    return {
+      key: period.key,
+      label: period.label,
+      startsAt,
+      visitorCount: uniqueVisitors.size,
+      pageViews: periodVisits.length,
+    };
+  });
+};
+
+const formatDateKey = (value) => {
+  const date = new Date(value);
+  return date.toISOString().slice(0, 10);
+};
+
+const buildDailyVisitTrend = (visits, dayCount = 7) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return Array.from({ length: dayCount }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (dayCount - 1 - index));
+    const key = formatDateKey(date);
+    const dayVisits = visits.filter((visit) => formatDateKey(visit.createdAt) === key);
+    const uniqueVisitors = new Set(dayVisits.map(getVisitorKey).filter(Boolean));
+
+    return {
+      date: key,
+      label: date.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }),
+      visitors: uniqueVisitors.size,
+      pageViews: dayVisits.length,
+    };
+  });
+};
+
+const buildTopPages = (visits) => {
+  const pageMap = new Map();
+
+  visits.forEach((visit) => {
+    const path = cleanString(visit.path) || "/";
+    const current = pageMap.get(path) || {
+      path,
+      pageViews: 0,
+      visitors: new Set(),
+    };
+
+    current.pageViews += 1;
+    const visitorKey = getVisitorKey(visit);
+    if (visitorKey) current.visitors.add(visitorKey);
+    pageMap.set(path, current);
+  });
+
+  return [...pageMap.values()]
+    .map((page) => ({
+      path: page.path,
+      pageViews: page.pageViews,
+      visitors: page.visitors.size,
+    }))
+    .sort((first, second) => second.pageViews - first.pageViews)
+    .slice(0, 6);
 };
 
 const makeToken = () =>
@@ -88,16 +161,29 @@ export const getAdminDonations = async (_req, res) => {
 };
 
 export const getAdminAnalytics = async (_req, res) => {
-  const donations = await findAllDonations();
+  const [donations, visits] = await Promise.all([findAllDonations(), findAllVisits()]);
   const uniqueDonors = new Set(donations.map(getDonorKey).filter(Boolean));
+  const uniqueVisitors = new Set(visits.map(getVisitorKey).filter(Boolean));
 
   return res.json({
     totals: {
+      visitors: uniqueVisitors.size,
+      pageViews: visits.length,
       users: uniqueDonors.size,
       payments: donations.length,
       receivedAmount: donations.reduce((sum, donation) => sum + (Number(donation.amount) || 0), 0),
     },
-    periods: buildDonationAnalytics(donations),
+    periods: buildDonationAnalytics(donations).map((period) => {
+      const visitPeriod = buildVisitAnalytics(visits).find((item) => item.key === period.key);
+
+      return {
+        ...period,
+        visitorCount: visitPeriod?.visitorCount || 0,
+        pageViews: visitPeriod?.pageViews || 0,
+      };
+    }),
+    dailyVisitors: buildDailyVisitTrend(visits),
+    topPages: buildTopPages(visits),
   });
 };
 

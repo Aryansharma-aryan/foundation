@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import { apiBaseUrl } from "./config/api";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Home from "./components/Pages/Home";
@@ -29,6 +30,47 @@ const ScrollToTop = () => {
   return null;
 };
 
+const visitorKey = "dgf_visitor_id";
+
+const getVisitorId = () => {
+  const existingId = localStorage.getItem(visitorKey);
+  if (existingId) return existingId;
+
+  const id =
+    window.crypto?.randomUUID?.() ||
+    `visitor_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
+  localStorage.setItem(visitorKey, id);
+  return id;
+};
+
+const VisitTracker = () => {
+  const { pathname, search } = useLocation();
+  const trackedPathRef = useRef("");
+
+  useEffect(() => {
+    if (pathname.startsWith("/admin")) return;
+
+    const path = `${pathname}${search}`;
+    if (trackedPathRef.current === path) return;
+    trackedPathRef.current = path;
+
+    const payload = JSON.stringify({
+      visitorId: getVisitorId(),
+      path,
+      referrer: document.referrer,
+    });
+    const url = `${apiBaseUrl}/api/analytics/visit`;
+
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: payload,
+    }).catch(() => {});
+  }, [pathname, search]);
+
+  return null;
+};
+
 function App() {
   const [loading, setLoading] = useState(true);
 
@@ -39,6 +81,7 @@ function App() {
   return (
     <div className="min-h-screen bg-transparent text-[var(--color-text)]">
       <ScrollToTop />
+      <VisitTracker />
       <Navbar />
       <main className="pt-20 sm:pt-24">
         <Routes>

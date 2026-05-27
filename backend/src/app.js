@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import adminRoutes from "./routes/adminRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
 import invoiceRoutes from "./routes/invoiceRoutes.js";
@@ -63,6 +64,7 @@ app.use(
 app.use(express.json({ limit: "1mb" }));
 
 app.use("/api", healthRoutes);
+app.use("/api", analyticsRoutes);
 app.use("/api", paymentRoutes);
 app.use("/api", invoiceRoutes);
 app.use("/api", adminRoutes);
