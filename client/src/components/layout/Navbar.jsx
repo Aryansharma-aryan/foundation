@@ -37,7 +37,7 @@ const Navbar = () => {
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
   const navLinkClass = (path) =>
-    `rounded-full px-3.5 py-2 text-[15px] font-bold transition ${
+    `whitespace-nowrap rounded-full px-2.5 py-2 text-[14px] font-bold transition 2xl:px-3.5 2xl:text-[15px] ${
       isActive(path)
         ? "bg-[var(--color-secondary)] text-[var(--color-primary)]"
         : "text-[var(--color-text)]/80 hover:bg-white hover:text-[var(--color-primary)]"
@@ -48,29 +48,29 @@ const Navbar = () => {
       <header className={`fixed inset-x-0 top-0 z-50 transition ${scrolled ? "py-3" : "py-4"}`}>
         <div className="shell">
           <div
-            className={`flex items-center justify-between rounded-full border px-4 py-3 shadow-[var(--shadow-soft)] transition sm:px-6 ${
+            className={`flex items-center justify-between gap-3 rounded-full border px-4 py-3 shadow-[var(--shadow-soft)] transition sm:px-6 ${
               scrolled
                 ? "border-white/70 bg-white/88 backdrop-blur-xl"
                 : "border-white/60 bg-white/76 backdrop-blur-lg"
             }`}
           >
-            <Link to="/" className="flex items-center gap-3">
+            <Link to="/" className="flex shrink-0 items-center gap-3">
               <img
                 src={logo}
                 alt="Davis Girdhar Foundation"
-                className="h-12 w-12 rounded-full object-cover ring-2 ring-[rgba(223,124,56,0.18)]"
+                className="h-11 w-11 rounded-full object-cover ring-2 ring-[rgba(223,124,56,0.18)] 2xl:h-12 2xl:w-12"
               />
               <div>
-                <p className="text-sm font-bold uppercase tracking-[0.24em] text-[var(--color-primary)]">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-primary)] 2xl:text-sm 2xl:tracking-[0.24em]">
                   Davis Girdhar
                 </p>
-                <p className="text-xs font-semibold tracking-[0.18em] text-[var(--color-muted)]">
+                <p className="text-[11px] font-semibold tracking-[0.14em] text-[var(--color-muted)] 2xl:text-xs 2xl:tracking-[0.18em]">
                   Foundation
                 </p>
               </div>
             </Link>
 
-            <nav className="hidden flex-wrap items-center justify-center gap-1 xl:flex">
+            <nav className="hidden flex-nowrap items-center justify-center gap-0.5 xl:flex 2xl:gap-1">
               {navLinks.map((link) => (
                 <Link key={link.path} to={link.path} className={navLinkClass(link.path)}>
                   {link.name}
@@ -78,16 +78,16 @@ const Navbar = () => {
               ))}
             </nav>
 
-            <div className="hidden items-center gap-3 xl:flex">
-              <Link to="/admin" className="btn-secondary px-5 py-2.5 text-sm">
+            <div className="hidden shrink-0 items-center gap-2 xl:flex 2xl:gap-3">
+              <Link to="/admin" className="btn-secondary px-4 py-2.5 text-sm 2xl:px-5">
                 Admin
               </Link>
-              <Link to="/get-involved" className="btn-secondary px-5 py-2.5 text-sm">
+              <Link to="/get-involved" className="btn-secondary px-4 py-2.5 text-sm 2xl:px-5">
                 Volunteer
               </Link>
               <Link
                 to="/donate"
-                className="btn-primary px-5 py-2.5 text-sm shadow-[0_18px_42px_rgba(225,106,31,0.38)] ring-2 ring-[rgba(245,187,74,0.34)] hover:shadow-[0_22px_52px_rgba(198,85,17,0.42)]"
+                className="btn-primary px-4 py-2.5 text-sm shadow-[0_18px_42px_rgba(225,106,31,0.38)] ring-2 ring-[rgba(245,187,74,0.34)] hover:shadow-[0_22px_52px_rgba(198,85,17,0.42)] 2xl:px-5"
               >
                 Donate
               </Link>

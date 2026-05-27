@@ -3,6 +3,35 @@ import jwt from "jsonwebtoken";
 import { findAllContactMessages } from "../repositories/contactRepository.js";
 import { findAllDonations } from "../repositories/donationRepository.js";
 import { cleanString } from "../utils/sanitize.js";
+import { streamPaymentStatementPdf } from "../utils/paymentStatementPdf.js";
+
+const periodDefinitions = [
+  { key: "last24Hours", label: "Last 24 hours", days: 1 },
+  { key: "last7Days", label: "Last 7 days", days: 7 },
+  { key: "last30Days", label: "Last 30 days", days: 30 },
+];
+
+const getDonorKey = (donation) =>
+  cleanString(donation?.donor?.email || donation?.donor?.phone || donation?.donor?.fullName).toLowerCase();
+
+const buildDonationAnalytics = (donations) => {
+  const now = Date.now();
+
+  return periodDefinitions.map((period) => {
+    const startsAt = new Date(now - period.days * 24 * 60 * 60 * 1000);
+    const periodDonations = donations.filter((donation) => new Date(donation.createdAt) >= startsAt);
+    const uniqueDonors = new Set(periodDonations.map(getDonorKey).filter(Boolean));
+
+    return {
+      key: period.key,
+      label: period.label,
+      startsAt,
+      userCount: uniqueDonors.size,
+      paymentCount: periodDonations.length,
+      totalAmount: periodDonations.reduce((sum, donation) => sum + (Number(donation.amount) || 0), 0),
+    };
+  });
+};
 
 const makeToken = () =>
   jwt.sign(
@@ -56,6 +85,25 @@ export const getAdminDonations = async (_req, res) => {
       receiptUrl: `/api/invoices/${donation.invoiceId}/download`,
     })),
   });
+};
+
+export const getAdminAnalytics = async (_req, res) => {
+  const donations = await findAllDonations();
+  const uniqueDonors = new Set(donations.map(getDonorKey).filter(Boolean));
+
+  return res.json({
+    totals: {
+      users: uniqueDonors.size,
+      payments: donations.length,
+      receivedAmount: donations.reduce((sum, donation) => sum + (Number(donation.amount) || 0), 0),
+    },
+    periods: buildDonationAnalytics(donations),
+  });
+};
+
+export const downloadPaymentStatement = async (_req, res) => {
+  const donations = await findAllDonations();
+  return streamPaymentStatementPdf(res, donations);
 };
 
 export const getAdminContactMessages = async (_req, res) => {
