@@ -3,7 +3,8 @@ import { fileURLToPath } from "node:url";
 import PDFDocument from "pdfkit";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const logoPath = path.resolve(__dirname, "../../../client/src/assets/davisnew.jpeg");
+const logoPath = path.resolve(__dirname, "../../../client/src/assets/dlogo.jpeg");
+const cinNumber = "U85490HR2025NPL129674";
 
 const colors = {
   ink: "#2f241d",
@@ -22,11 +23,10 @@ const page = {
   width: 511,
 };
 
-const formatAmount = (amount, currency = "INR") =>
+const formatAmountNumber = (amount) =>
   new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
     minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format((amount || 0) / 100);
 
 const ones = [
@@ -136,6 +136,29 @@ const drawDivider = (doc, y) => {
   doc.moveTo(page.left, y).lineTo(page.right, y).lineWidth(0.8).strokeColor(colors.line).stroke();
 };
 
+const drawRupeeSymbol = (doc, x, y, size, color) => {
+  const scale = size / 24;
+  const stroke = 2.3 * scale;
+
+  doc
+    .save()
+    .lineWidth(stroke)
+    .lineCap("round")
+    .lineJoin("round")
+    .strokeColor(color)
+    .moveTo(x + 2 * scale, y + 1 * scale)
+    .lineTo(x + 20 * scale, y + 1 * scale)
+    .moveTo(x + 2 * scale, y + 7 * scale)
+    .lineTo(x + 20 * scale, y + 7 * scale)
+    .moveTo(x + 5 * scale, y + 1 * scale)
+    .lineTo(x + 11 * scale, y + 1 * scale)
+    .bezierCurveTo(x + 20 * scale, y + 1 * scale, x + 20 * scale, y + 15 * scale, x + 8 * scale, y + 15 * scale)
+    .lineTo(x + 4 * scale, y + 15 * scale)
+    .lineTo(x + 17 * scale, y + 25 * scale)
+    .stroke()
+    .restore();
+};
+
 const drawHeader = (doc, donation) => {
   doc.roundedRect(28, 28, 539, 785, 14).fillAndStroke("#ffffff", colors.line);
   doc.rect(28, 28, 539, 142).fill(colors.soft);
@@ -159,7 +182,8 @@ const drawHeader = (doc, donation) => {
     .fillColor(colors.muted)
     .text("C/o Sh. Sham Das, Umri, Mathana, Umri Thanesar", 150, 82, { width: 300 })
     .text("Kurukshetra, Haryana, 136131, India", 150, 97, { width: 300 })
-    .text("Donation Receipt", 150, 120, { width: 300 });
+    .text(`CIN: ${cinNumber}`, 150, 112, { width: 300 })
+    .text("Donation Receipt", 150, 128, { width: 300 });
 
   doc.roundedRect(430, 54, 94, 34, 17).fill("#e8f7ef");
   doc.font("Helvetica-Bold").fontSize(12).fillColor(colors.success).text("PAID", 430, 64, {
@@ -180,7 +204,8 @@ const drawReceiptSummary = (doc, donation) => {
     .font("Helvetica-Bold")
     .fontSize(24)
     .fillColor(colors.primaryDark)
-    .text(formatAmount(donation.amount, donation.currency), page.left + 18, y + 36, { width: 210 });
+    .text(formatAmountNumber(donation.amount), page.left + 48, y + 36, { width: 180 });
+  drawRupeeSymbol(doc, page.left + 18, y + 39, 25, colors.primaryDark);
   doc
     .font("Helvetica-Bold")
     .fontSize(8)
