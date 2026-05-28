@@ -161,14 +161,14 @@ const drawRupeeSymbol = (doc, x, y, size, color) => {
 
 const drawHeader = (doc, donation) => {
   doc.roundedRect(28, 28, 539, 785, 14).fillAndStroke("#ffffff", colors.line);
-  doc.rect(28, 28, 539, 142).fill(colors.soft);
+  doc.rect(28, 28, 539, 142).fill("#ffffff");
   doc.rect(28, 166, 539, 4).fill(colors.primary);
 
   try {
-    doc.image(logoPath, 55, 54, { fit: [76, 76], align: "center", valign: "center" });
+    doc.image(logoPath, 48, 47, { fit: [90, 90], align: "center", valign: "center" });
   } catch {
-    doc.circle(93, 92, 38).fill(colors.primary);
-    doc.fillColor("#ffffff").fontSize(18).font("Helvetica-Bold").text("DGF", 72, 82);
+    doc.circle(93, 92, 45).fill(colors.primary);
+    doc.fillColor("#ffffff").fontSize(20).font("Helvetica-Bold").text("DGF", 70, 81);
   }
 
   doc
