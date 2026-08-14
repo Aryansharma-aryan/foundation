@@ -1,18 +1,19 @@
 import { Link } from "react-router-dom";
+import { Autoplay, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import codingImage from "../../assets/program-codding.jpg";
-import educationImage from "../../assets/students.jpeg";
+import educationImageOne from "../../assets/education1.jfif";
+import educationImageTwo from "../../assets/education2.jfif";
+import educationImageThree from "../../assets/education3.jfif";
 import foodImage from "../../assets/meals.jpeg";
 import healthcareImage from "../../assets/program-healthcare.jpg";
-import food1 from "../../assets/food1.jpeg";
-import food2 from "../../assets/food2.jpeg"
-import food3 from "../../assets/food3.jpeg"
 
 const programs = [
   {
     title: "Education Support",
     slug: "education",
     summary: "Daily teaching support for children who need a steady, encouraging, and more structured learning environment.",
-    image: educationImage,
+    images: [educationImageOne, educationImageTwo, educationImageThree],
     points: ["Academic support", "Guided learning", "Student confidence"],
     detail:
       "We help children continue learning with better consistency through personal guidance, subject support, and a caring study environment.",
@@ -60,7 +61,27 @@ const Programs = () => {
       <section className="shell grid gap-6">
         {programs.map((program) => (
           <article key={program.title} className="card overflow-hidden rounded-[2rem] lg:grid lg:grid-cols-[0.95fr_1.05fr]">
-            <img src={program.image} alt={program.title} className="h-72 w-full object-cover lg:h-full" />
+            {program.images ? (
+              <Swiper
+                modules={[Autoplay, Pagination]}
+                autoplay={{ delay: 2600, disableOnInteraction: false }}
+                loop
+                pagination={{ clickable: true }}
+                className="program-image-swiper h-72 w-full lg:h-full"
+              >
+                {program.images.map((image, index) => (
+                  <SwiperSlide key={image}>
+                    <img
+                      src={image}
+                      alt={`${program.title} ${index + 1}`}
+                      className="h-72 w-full object-cover lg:h-full"
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <img src={program.image} alt={program.title} className="h-72 w-full object-cover lg:h-full" />
+            )}
             <div className="p-6 sm:p-8">
               <h2 className="text-3xl font-bold text-[var(--color-text)]">{program.title}</h2>
               <p className="mt-4 text-base leading-8 text-[var(--color-muted)]">{program.summary}</p>

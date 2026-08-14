@@ -2,7 +2,9 @@ import { Link } from "react-router-dom";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import codingImage from "../../assets/program-codding.jpg";
-import educationImage from "../../assets/students.jpeg";
+import educationImageOne from "../../assets/education1.jfif";
+import educationImageTwo from "../../assets/education2.jfif";
+import educationImageThree from "../../assets/education3.jfif";
 import foodImageOne from "../../assets/food1.jpeg";
 import foodImageTwo from "../../assets/food2.jpeg";
 import foodImageThree from "../../assets/food3.jpeg";
@@ -13,7 +15,7 @@ const programs = [
     title: "Education Support",
     slug: "education",
     text: "Regular teaching support and mentoring for children who need a stronger academic foundation.",
-    image: educationImage,
+    images: [educationImageOne, educationImageTwo, educationImageThree],
     to: "/programs/education",
   },
   {
@@ -64,7 +66,7 @@ const ProgramsPreview = () => {
                   autoplay={{ delay: 2600, disableOnInteraction: false }}
                   loop
                   pagination={{ clickable: true }}
-                  className="program-food-swiper h-56 w-full"
+                  className="program-image-swiper h-56 w-full"
                 >
                   {program.images.map((image, index) => (
                     <SwiperSlide key={image}>
