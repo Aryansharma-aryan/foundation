@@ -7,6 +7,37 @@ import educationImageTwo from "../../assets/education2.jfif";
 import educationImageThree from "../../assets/education3.jfif";
 import foodImage from "../../assets/meals.jpeg";
 import healthcareImage from "../../assets/program-healthcare.jpg";
+import today1 from "../../assets/today1.jpeg";
+import today2 from "../../assets/today2.jpeg";
+import today3 from "../../assets/today3.jpeg";
+import today4 from "../../assets/toay4.jpeg";
+import today5 from "../../assets/today5.jpeg";
+import today6 from "../../assets/today6.jpeg";
+import today7 from "../../assets/today7.jpeg";
+import today8 from "../../assets/today8.jpeg";
+import today9 from "../../assets/today9.jpeg";
+import today10 from "../../assets/today10.jpeg";
+import today11 from "../../assets/today11.jpeg";
+import today12Photo from "../../assets/toay12.jpeg";
+import today12Video from "../../assets/today12.mp4";
+import item13Video from "../../assets/13.mp4";
+
+const diwaliMoments = [
+  { title: "Diwali celebration with kids — Photo 1", type: "image", src: today1 },
+  { title: "Diwali celebration with kids — Photo 2", type: "image", src: today2 },
+  { title: "Diwali celebration with kids — Photo 3", type: "image", src: today3 },
+  { title: "Diwali celebration with kids — Photo 4", type: "image", src: today4 },
+  { title: "Diwali celebration with kids — Photo 5", type: "image", src: today5 },
+  { title: "Diwali celebration with kids — Photo 6", type: "image", src: today6 },
+  { title: "Diwali celebration with kids — Photo 7", type: "image", src: today7 },
+  { title: "Diwali celebration with kids — Photo 8", type: "image", src: today8 },
+  { title: "Diwali celebration with kids — Photo 9", type: "image", src: today9 },
+  { title: "Diwali celebration with kids — Photo 10", type: "image", src: today10 },
+  { title: "Diwali celebration with kids — Photo 11", type: "image", src: today11 },
+  { title: "Diwali celebration with kids — Photo 12", type: "image", src: today12Photo },
+  { title: "Diwali celebration with kids — Video 12", type: "video", src: today12Video },
+  { title: "Diwali celebration with kids — Video 13", type: "video", src: item13Video },
+];
 
 const programs = [
   {
@@ -56,6 +87,48 @@ const Programs = () => {
         <p className="section-copy mx-auto">
           Each program has its own dedicated page so visitors can understand in a genuine way how the foundation provides support on the ground.
         </p>
+      </section>
+
+      <section className="shell mb-12" aria-label="Diwali celebration with kids">
+        <div className="card overflow-hidden rounded-[2rem]">
+          <div className="px-6 pt-7 text-center sm:px-8">
+            <p className="section-kicker">Foundation moments</p>
+            <h2 className="section-title">Diwali celebration with kids</h2>
+            <p className="section-copy mx-auto">
+              A look at the Diwali gifts shared with children studying free through Davis Girdhar Foundation.
+            </p>
+          </div>
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            autoplay={{ delay: 5000, disableOnInteraction: false }}
+            loop
+            pagination={{ clickable: true }}
+            className="program-image-swiper mt-6 h-80 w-full sm:h-[30rem]"
+          >
+            {diwaliMoments.map((moment) => (
+              <SwiperSlide key={moment.title}>
+                {moment.type === "video" ? (
+                  <video
+                    className="h-80 w-full bg-slate-950 object-contain sm:h-[30rem]"
+                    controls
+                    preload="metadata"
+                    aria-label={moment.title}
+                  >
+                    <source src={moment.src} type="video/mp4" />
+                    Your browser does not support video playback.
+                  </video>
+                ) : (
+                  <img
+                    src={moment.src}
+                    alt={moment.title}
+                    className="h-80 w-full object-contain bg-slate-950 sm:h-[30rem]"
+                    loading="lazy"
+                  />
+                )}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
       </section>
 
       <section className="shell grid gap-6">
