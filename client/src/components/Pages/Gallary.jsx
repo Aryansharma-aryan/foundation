@@ -15,20 +15,20 @@ import today12Video from "../../assets/today12.mp4";
 import item13Video from "../../assets/13.mp4";
 
 const galleryItems = [
-  { title: "Diwali Gifts — Photo 1", type: "image", src: today1 },
-  { title: "Diwali Gifts — Photo 2", type: "image", src: today2 },
-  { title: "Diwali Gifts — Photo 3", type: "image", src: today3 },
-  { title: "Diwali Gifts — Photo 4", type: "image", src: today4 },
-  { title: "Diwali Gifts — Photo 5", type: "image", src: today5 },
-  { title: "Diwali Gifts — Photo 6", type: "image", src: today6 },
-  { title: "Diwali Gifts — Photo 7", type: "image", src: today7 },
-  { title: "Diwali Gifts — Photo 8", type: "image", src: today8 },
-  { title: "Diwali Gifts — Photo 9", type: "image", src: today9 },
-  { title: "Diwali Gifts — Photo 10", type: "image", src: today10 },
-  { title: "Diwali Gifts — Photo 11", type: "image", src: today11 },
-  { title: "Diwali Gifts — Photo 12", type: "image", src: today12Photo },
-  { title: "Diwali Gifts — Video 12", type: "video", src: today12Video },
-  { title: "Diwali Gifts — Video 13", type: "video", src: item13Video },
+  { type: "image", src: today1 },
+  { type: "image", src: today2 },
+  { type: "image", src: today3 },
+  { type: "image", src: today4 },
+  { type: "image", src: today5 },
+  { type: "image", src: today6 },
+  { type: "image", src: today7 },
+  { type: "image", src: today8 },
+  { type: "image", src: today9 },
+  { type: "image", src: today10 },
+  { type: "image", src: today11 },
+  { type: "image", src: today12Photo },
+  { type: "video", src: today12Video },
+  { type: "video", src: item13Video },
 ];
 
 const Gallery = () => (
@@ -39,7 +39,7 @@ const Gallery = () => (
         Diwali gifts for our young learners
       </h1>
       <p className="section-copy mx-auto">
-        Moments from Davis Girdhar Foundation’s Diwali gift distribution for
+        Moments from Davis Girdhar Foundation's Diwali gift distribution for
         children who study with the foundation free of charge. We are grateful
         to everyone who helped make this celebration special.
       </p>
@@ -50,13 +50,13 @@ const Gallery = () => (
       aria-label="Diwali gift distribution photos and videos"
     >
       {galleryItems.map((item) => (
-        <article key={item.title} className="card overflow-hidden rounded-[2rem]">
+        <article key={item.src} className="card overflow-hidden rounded-[2rem]">
           {item.type === "video" ? (
             <video
               className="h-72 w-full bg-slate-950 object-contain"
               controls
               preload="metadata"
-              aria-label={item.title}
+              aria-label="Diwali celebration video"
             >
               <source src={item.src} type="video/mp4" />
               Your browser does not support video playback.
@@ -64,19 +64,11 @@ const Gallery = () => (
           ) : (
             <img
               src={item.src}
-              alt={`${item.title} from the Davis Girdhar Foundation Diwali gift distribution`}
+              alt="Children celebrating Diwali with Davis Girdhar Foundation"
               className="h-72 w-full object-cover"
               loading="lazy"
             />
           )}
-          <div className="p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[var(--color-primary)]">
-              {item.type === "video" ? "Video" : "Photo"}
-            </p>
-            <h2 className="mt-3 text-2xl font-bold text-[var(--color-text)]">
-              {item.title}
-            </h2>
-          </div>
         </article>
       ))}
     </section>
