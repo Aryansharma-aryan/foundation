@@ -108,8 +108,8 @@ const Navbar = () => {
 
       {mobileOpen && (
         <div className="fixed inset-0 z-40 bg-[rgba(68,37,21,0.18)] backdrop-blur-sm xl:hidden">
-          <div className="shell flex h-full items-start pt-24">
-            <div className="card w-full rounded-[2rem] p-5">
+          <div className="shell flex h-full items-start pt-[calc(6rem+env(safe-area-inset-top))]">
+            <div className="card max-h-[calc(100dvh-7rem)] w-full overflow-y-auto overscroll-contain rounded-[2rem] p-4 sm:p-5">
               <nav className="flex flex-col gap-2">
                 {navLinks.map((link) => (
                   <Link

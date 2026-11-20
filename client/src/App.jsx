@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
 import { apiBaseUrl } from "./config/api";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
@@ -20,6 +20,28 @@ import Admin from "./components/Pages/Admin";
 import TermsConditions from "./components/Pages/TermsConditions";
 import PrivacyPolicy from "./components/Pages/PrivacyPolicy";
 import SeoManager from "./seo/SeoManager";
+import { HiHeart } from "react-icons/hi";
+
+const FloatingDonateButton = () => {
+  const { pathname } = useLocation();
+
+  if (pathname.startsWith("/donate") || pathname.startsWith("/admin")) return null;
+
+  return (
+    <Link
+      to="/donate"
+      className="fixed bottom-4 right-4 z-40 inline-flex min-h-12 items-center gap-2 rounded-full border border-white/70 bg-[var(--color-primary)] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_32px_rgba(119,54,13,0.32)] transition hover:-translate-y-0.5 hover:bg-[var(--color-primary-dark)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 sm:bottom-6 sm:right-6 sm:px-6 sm:text-base"
+      style={{
+        bottom: "calc(1rem + env(safe-area-inset-bottom))",
+        right: "calc(1rem + env(safe-area-inset-right))",
+      }}
+      aria-label="Donate now through the secure donation page"
+    >
+      <HiHeart className="text-lg" aria-hidden="true" />
+      Donate Now
+    </Link>
+  );
+};
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -105,6 +127,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <FloatingDonateButton />
     </div>
   );
 }

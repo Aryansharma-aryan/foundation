@@ -26,7 +26,7 @@ const groups = [
 const Footer = () => {
   return (
     <footer className="mt-12 border-t border-[var(--color-line)] bg-[linear-gradient(180deg,#fff5eb_0%,#fdeedc_100%)]">
-      <div className="shell grid gap-10 py-14 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+      <div className="shell grid gap-8 py-10 sm:gap-10 sm:py-14 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-[var(--color-primary)]">
             Davis Girdhar Foundation
@@ -63,7 +63,7 @@ const Footer = () => {
           </div>
         ))}
       </div>
-      <div className="border-t border-[var(--color-line)] px-4 py-4 text-center text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">
+      <div className="border-t border-[var(--color-line)] px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-4 text-center text-[10px] uppercase leading-6 tracking-[0.12em] text-[var(--color-muted)] sm:px-6 sm:py-4 sm:text-xs sm:tracking-[0.18em]">
         Davis Girdhar Foundation | C/o Sh. Sham Das, Umri, Mathana, Umri Thanesar, Kurukshetra, Haryana, 136131
       </div>
     </footer>

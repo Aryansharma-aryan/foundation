@@ -92,11 +92,11 @@
   }
 
   .section-title {
-    @apply mt-4 text-4xl font-bold leading-[1.08] text-[var(--color-text)] sm:text-5xl lg:text-6xl;
+    @apply mt-4 text-3xl font-bold leading-[1.12] text-[var(--color-text)] sm:text-5xl sm:leading-[1.08] lg:text-6xl;
   }
 
   .section-copy {
-    @apply mt-5 max-w-3xl text-lg leading-8 text-[var(--color-muted)] sm:text-xl;
+    @apply mt-5 max-w-3xl text-base leading-7 text-[var(--color-muted)] sm:text-xl sm:leading-8;
   }
 
   .card {
